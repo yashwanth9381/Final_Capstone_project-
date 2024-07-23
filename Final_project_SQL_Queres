@@ -1,0 +1,89 @@
+create DATABASE last_project;
+
+use last_project;
+
+select * from himanshu;
+
+
+select distinct region from Himanshu;
+
+
+--Q1 #display the region wise no of employees.--
+
+select count(*) as No_of_customer, region from Himanshu
+group by region;
+
+--Q2 How many employees are there in each department?
+SELECT department, COUNT(*) AS num_employees
+FROM Himanshu
+GROUP BY department;
+
+--Q3 What is the average length of service for employees in each region?
+SELECT region, AVG(length_of_service) AS avg_length_of_service
+FROM Himanshu
+GROUP BY region;
+
+--Q4 Which employees have attended more than one training session?
+SELECT *
+FROM Himanshu
+WHERE no_of_trainings > 1;
+
+--Q5 Find Employees with the Highest Previous Year Ratings in each Department:
+SELECT department, MAX(previous_year_rating) AS max_rating
+FROM Himanshu
+GROUP BY department;
+
+--Q6 List Employees Who Have Met KPIs >80% and Won Awards:
+SELECT *
+FROM Himanshu
+WHERE "KPIs_met >80%" = 1 AND [awards_won?] = 1;
+
+--Q7 Calculate Bonus Based on Performance:
+SELECT employee_id, department, previous_year_rating,
+       CASE
+           WHEN previous_year_rating >= 4.0 THEN 'High Performer'
+           WHEN previous_year_rating = 3.0 THEN 'Average Performer'
+           ELSE 'Low Performer'
+       END AS performance_category,
+       CASE
+           WHEN previous_year_rating >= 4.0 THEN 10000
+           WHEN previous_year_rating = 3.0 THEN 5000
+           ELSE 0
+       END AS bonus_amount
+FROM Himanshu;
+
+
+--Q8 Identify Employees with Below Average Training Scores by Department:
+SELECT *
+FROM Himanshu e
+WHERE avg_training_score < (
+    SELECT AVG(avg_training_score)
+    FROM Himanshu
+    WHERE department = e.department
+);
+--Q9 Use CTE to Calculate Average Age and Length of Service by Department:
+WITH department_stats AS (
+    SELECT department, AVG(age) AS avg_age, AVG(length_of_service) AS avg_service_length
+    FROM Himanshu
+    GROUP BY department
+)
+SELECT *
+FROM department_stats;
+
+Select * from himanshu
+
+--Q10 Subquery to Identify Employees with the Highest Previous Year Ratings in Operations Department:
+SELECT *
+FROM Himanshu
+WHERE previous_year_rating = (
+    SELECT MAX(previous_year_rating)
+    FROM Himanshu
+    WHERE department = 'Operations'
+) AND department = 'Operations';
+
+
+--Q 11 Window Function to Rank Employees by Average Training Score within Each Department:
+SELECT *,
+       RANK() OVER (PARTITION BY department ORDER BY avg_training_score DESC) AS training_score_rank
+FROM Himanshu;
+
